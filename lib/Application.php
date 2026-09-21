@@ -36,6 +36,7 @@ if (!defined('HORDE_BASE')) {
     }
 }
 
+use Horde\Gollem\GollemConfig;
 use Horde\Util\Variables;
 use Horde\Util\Util;
 
@@ -119,7 +120,7 @@ class Gollem_Application extends Horde_Registry_Application
     {
         $params = [];
 
-        if (($GLOBALS['conf']['backend']['backend_list'] ?? '') == 'shown') {
+        if ($GLOBALS['injector']->get(GollemConfig::class)->get('backend.backend_list') === 'shown') {
             $backends = Gollem_Auth::getBackend();
             if (!is_array($backends)) {
                 $this->_logInitFailure('authLoginParams');
@@ -288,7 +289,7 @@ class Gollem_Application extends Horde_Registry_Application
      */
     public function sidebar($sidebar)
     {
-        if (($GLOBALS['conf']['backend']['backend_list'] ?? '') != 'shown') {
+        if ($GLOBALS['injector']->get(GollemConfig::class)->get('backend.backend_list') !== 'shown') {
             return;
         }
 

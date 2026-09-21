@@ -1,5 +1,6 @@
 <?php
 
+use Horde\Gollem\GollemConfig;
 use Horde\Util\Util;
 
 /**
@@ -199,15 +200,15 @@ class Gollem
      */
     public static function listFolder($dir)
     {
-        global $conf;
+        $config = $GLOBALS['injector']->get(GollemConfig::class);
 
-        if (!empty($conf['foldercache']['use_cache'])
-            && !empty($conf['cache']['driver'])
-            && ($conf['cache']['driver'] != 'none')) {
+        if (!empty($config->get('foldercache.use_cache'))
+            && !empty($config->get('cache.driver'))
+            && ($config->get('cache.driver') != 'none')) {
             $key = self::_getCacheID($dir);
 
             $cache = $GLOBALS['injector']->getInstance('Horde_Cache');
-            $res = $cache->get($key, $conf['foldercache']['lifetime']);
+            $res = $cache->get($key, $config->get('foldercache.lifetime'));
             if ($res !== false) {
                 $res = Horde_Serialize::unserialize($res, Horde_Serialize::BASIC);
                 if (is_array($res)) {
@@ -236,7 +237,7 @@ class Gollem
         usort($files, ['Gollem', $sortcols[$GLOBALS['prefs']->getValue('sortby')]]);
 
         if (isset($cache)) {
-            $cache->set($key, Horde_Serialize::serialize($files, Horde_Serialize::BASIC), $conf['foldercache']['lifetime']);
+            $cache->set($key, Horde_Serialize::serialize($files, Horde_Serialize::BASIC), $config->get('foldercache.lifetime'));
         }
 
         return $files;
@@ -265,11 +266,11 @@ class Gollem
      */
     public static function expireCache($dir)
     {
-        global $conf;
+        $config = $GLOBALS['injector']->get(GollemConfig::class);
 
-        if (!empty($conf['foldercache']['use_cache'])
-            && !empty($conf['cache']['driver'])
-            && ($conf['cache']['driver'] != 'none')) {
+        if (!empty($config->get('foldercache.use_cache'))
+            && !empty($config->get('cache.driver'))
+            && ($config->get('cache.driver') != 'none')) {
             $cache = $GLOBALS['injector']->getInstance('Horde_Cache');
             $cache->expire(self::_getCacheID($dir));
         }
